@@ -1,6 +1,7 @@
-package com.chadgolden.sleeptrack;
+package com.chadgolden.sleeptrack.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -10,8 +11,13 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.chadgolden.sleeptrack.R;
+import com.chadgolden.sleeptrack.data.DataProcessor;
 
 
 public class SensorActivity extends ActionBarActivity implements SensorEventListener {
@@ -24,12 +30,18 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
     private TextView moveStatus;
     private ImageView moonImage;
 
+    private Button buttonStats;
+
     private float previousX;
     private float previousY;
     private float previousZ;
 
     private static final int DELAY = 1000; // In milliseconds.
     private static final float ALLOWABLE_MOVEMENT = 0.10f;
+
+    private int segmentMovementCount = 0;
+    private int segmentDuration = 5000;
+    private long lastEntry = System.currentTimeMillis();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +56,16 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
 
         moveStatus = (TextView) findViewById(R.id.textViewMoveStatus);
         moonImage = (ImageView) findViewById(R.id.moonImage);
+
+        buttonStats = (Button) findViewById(R.id.buttonStats);
+
+        buttonStats.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent chartIntent = new Intent(SensorActivity.this, ChartActivity.class);
+                startActivity(chartIntent);
+            }
+        });
+
 
         moonImage.bringToFront();
 
@@ -82,6 +104,12 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
             if ((currentTimeInMillis - lastUpdateTimeMillis) >= DELAY) {
                 lastUpdateTimeMillis = currentTimeInMillis;
                 if (sensorExteedsAllowableMovement(event.values)) {
+                    segmentMovementCount++;
+                    if ((System.currentTimeMillis() - lastEntry) > segmentDuration) {
+                        lastEntry = System.currentTimeMillis();
+                        DataProcessor.getInstance().addEntry(segmentMovementCount);
+                        segmentMovementCount = 0;
+                    }
                     moveStatus.setTextColor(Color.GREEN);
                 } else {
                     moveStatus.setTextColor(Color.rgb(50,50,50));
