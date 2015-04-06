@@ -24,23 +24,35 @@ public class DataProcessor {
     private String title;
 
     private int bufferIndex = 0;
+    private int bufferSize = 8;
 
     private DataProcessor() {
+//        title = "Test Chart";
+//        labels = new ArrayList<>();
+//        labels.add("--:--");
+//        labels.add("--:--");
+//        labels.add("--:--");
+//        labels.add("--:--");
+//        labels.add("--:--");
+//        //labels.add("June");
+//        dataEntries = new ArrayList<>();
+//        dataEntries.add(new Entry(0f, 0));
+//        dataEntries.add(new Entry(0f, 1));
+//        dataEntries.add(new Entry(0f, 2));
+//        dataEntries.add(new Entry(0f, 3));
+//        dataEntries.add(new Entry(0f, 4));
+//        dataEntries.add(new Entry(9f, 5));
+        init();
+    }
+
+    private void init() {
         title = "Test Chart";
         labels = new ArrayList<>();
-//        labels.add("January");
-//        labels.add("February");
-//        labels.add("March");
-//        labels.add("April");
-//        labels.add("May");
-//        labels.add("June");
         dataEntries = new ArrayList<>();
-//        dataEntries.add(new Entry(4f, 0));
-//        dataEntries.add(new Entry(8f, 1));
-//        dataEntries.add(new Entry(6f, 2));
-//        dataEntries.add(new Entry(12f, 3));
-//        dataEntries.add(new Entry(18f, 4));
-//        dataEntries.add(new Entry(9f, 5));
+        for (int i = 0; i < bufferSize; i++) {
+            labels.add("--:--:--");
+            dataEntries.add(new Entry(0, i));
+        }
     }
 
     private DataProcessor(ArrayList<Entry> dataEntries, String title) {
@@ -64,19 +76,26 @@ public class DataProcessor {
         return labels;
     }
 
-    public void addEntry(float data) {
-        if (bufferIndex < 5) {
+    public void addEntry(String time, float data) {
+        if (bufferIndex < bufferSize) {
             dataEntries.remove(bufferIndex);
             dataEntries.add(bufferIndex, new Entry(data, bufferIndex));
-            labels.add(bufferIndex, System.currentTimeMillis() + "");
+            labels.remove(bufferIndex);
+            labels.add(bufferIndex, time);
         } else {
             bufferIndex = 0;
             dataEntries.remove(bufferIndex);
             dataEntries.add(bufferIndex, new Entry(data, bufferIndex));
-            labels.add(bufferIndex, System.currentTimeMillis() + "");
+            labels.remove(bufferIndex);
+            labels.add(bufferIndex, time);
         }
         bufferIndex++;
     }
+
+//    public void addEntry(String time, float data) {
+//        addEntry(data);
+//        addLabel(time);
+//    }
 
     public void addLabel(String label) {
         if (bufferIndex < 5) {
