@@ -18,9 +18,18 @@ import android.widget.TextView;
 
 import com.chadgolden.sleeptrack.R;
 import com.chadgolden.sleeptrack.data.DataProcessor;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.LineData;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class SensorActivity extends ActionBarActivity implements SensorEventListener {
+
+    public static int INTERVAL = 1000*5;
 
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
@@ -36,17 +45,43 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
     private float previousY;
     private float previousZ;
 
-    private static final int DELAY = 1000; // In milliseconds.
+    private static final int DELAY = 100; // In milliseconds.
     private static final float ALLOWABLE_MOVEMENT = 0.10f;
 
     private int segmentMovementCount = 0;
     private int segmentDuration = 5000;
     private long lastEntry = System.currentTimeMillis();
 
+    private Timer timer;
+    private ChartTimer timerTask;
+
+    private LineChart lineChart;
+    private LineData lineData;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensor);
+
+        lineData = new LineData(
+                DataProcessor.getInstance().getLabels(),
+                DataProcessor.getInstance().getDataSet()
+        );
+
+        lineChart = new LineChart(getApplicationContext());
+        lineChart.setData(lineData);
+        lineChart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setContentView(R.layout.activity_sensor);
+            }
+        });
+
+        timer = new Timer();
+        timerTask = new ChartTimer();
+
+        // Set timer schedule to run timer task.
+        timer.schedule(timerTask, 0, INTERVAL);
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -61,8 +96,9 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
 
         buttonStats.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent chartIntent = new Intent(SensorActivity.this, ChartActivity.class);
-                startActivity(chartIntent);
+//                Intent chartIntent = new Intent(SensorActivity.this, ChartActivity.class);
+//                startActivity(chartIntent);
+                setContentView(lineChart);
             }
         });
 
@@ -103,13 +139,13 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
         if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             if ((currentTimeInMillis - lastUpdateTimeMillis) >= DELAY) {
                 lastUpdateTimeMillis = currentTimeInMillis;
-                if (sensorExteedsAllowableMovement(event.values)) {
+                if (sensorExceedsAllowableMovement(event.values)) {
                     segmentMovementCount++;
-                    if ((System.currentTimeMillis() - lastEntry) > segmentDuration) {
-                        lastEntry = System.currentTimeMillis();
-                        DataProcessor.getInstance().addEntry(segmentMovementCount);
-                        segmentMovementCount = 0;
-                    }
+//                    if ((System.currentTimeMillis() - lastEntry) > segmentDuration) {
+//                        lastEntry = System.currentTimeMillis();
+//                        DataProcessor.getInstance().addEntry(segmentMovementCount);
+//                        segmentMovementCount = 0;
+//                    }
                     moveStatus.setTextColor(Color.GREEN);
                 } else {
                     moveStatus.setTextColor(Color.rgb(50,50,50));
@@ -140,7 +176,7 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
         // Not interested.
     }
 
-    private boolean sensorExteedsAllowableMovement(float[] values) {
+    private boolean sensorExceedsAllowableMovement(float[] values) {
         if (Math.abs(values[0] - previousX) > ALLOWABLE_MOVEMENT ||
             Math.abs(values[1] - previousY) > ALLOWABLE_MOVEMENT ||
             Math.abs(values[2] - previousZ) > ALLOWABLE_MOVEMENT) {
@@ -148,4 +184,32 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
         }
         return false;
     }
+
+    class ChartTimer extends TimerTask {
+
+        @Override
+        public void run() {
+
+            Calendar calendar = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+            final String time = sdf.format(calendar.getTime());
+            //System.out.println("Timer executed at: " + time);
+//            runOnUiThread(
+//                    () -> {
+//                        DataProcessor.getInstance().addEntry(time, segmentMovementCount);
+//                        segmentMovementCount = 0;
+//            });
+            DataProcessor.getInstance().addEntry(time, segmentMovementCount);
+            System.out.println("Entry added: " + time + ", " + segmentMovementCount);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    lineChart.invalidate();
+                    segmentMovementCount = 0;
+                }
+            });
+
+        }
+    }
+
 }

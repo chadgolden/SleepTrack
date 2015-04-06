@@ -60,4 +60,18 @@ public class ChartActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    public void updateChart()
+    {
+        DataProcessor dataProcessor = DataProcessor.getInstance();
+        data = new LineData(dataProcessor.getLabels(),dataProcessor.getDataSet());
+        // Must be done on UI Thread.
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run()
+            {
+                chart.invalidate();
+            }
+        });
+    }
 }
