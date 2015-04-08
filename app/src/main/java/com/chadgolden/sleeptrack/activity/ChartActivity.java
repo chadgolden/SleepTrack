@@ -20,7 +20,7 @@ public class ChartActivity extends ActionBarActivity {
 
     private DataProcessor dataProcessor;
 
-    private Chart chart;
+    private LineChart chart;
     private LineData data;
 
     @Override
@@ -30,9 +30,10 @@ public class ChartActivity extends ActionBarActivity {
 
         dataProcessor = DataProcessor.getInstance();
         chart = new LineChart(this.getApplicationContext());
-        data = new LineData(dataProcessor.getLabels(),dataProcessor.getDataSet());
-
+        //data = dataProcessor.getLineData();
+        data = new LineData(dataProcessor.getLabelsAsArrayList(), dataProcessor.getDataSet());
         chart.setData(data);
+        chart.invalidate();
 
         setContentView(chart);
 
@@ -64,7 +65,9 @@ public class ChartActivity extends ActionBarActivity {
     public void updateChart()
     {
         DataProcessor dataProcessor = DataProcessor.getInstance();
-        data = new LineData(dataProcessor.getLabels(),dataProcessor.getDataSet());
+        data = new LineData(dataProcessor.getLabelsAsArrayList(),dataProcessor.getDataSet());
+        data.setDrawValues(false);
+        System.err.println(data.getDataSetByIndex(0).isDrawFilledEnabled());
         // Must be done on UI Thread.
         runOnUiThread(new Runnable() {
             @Override

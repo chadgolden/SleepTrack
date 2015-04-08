@@ -19,7 +19,10 @@ import android.widget.TextView;
 import com.chadgolden.sleeptrack.R;
 import com.chadgolden.sleeptrack.data.DataProcessor;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.utils.FillFormatter;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -29,7 +32,7 @@ import java.util.TimerTask;
 
 public class SensorActivity extends ActionBarActivity implements SensorEventListener {
 
-    public static int INTERVAL = 1000*5;
+    public static int INTERVAL = 500;
 
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
@@ -45,8 +48,8 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
     private float previousY;
     private float previousZ;
 
-    private static final int DELAY = 100; // In milliseconds.
-    private static final float ALLOWABLE_MOVEMENT = 0.10f;
+    private static final int DELAY = 10; // In milliseconds.
+    private static final float ALLOWABLE_MOVEMENT = 0.04f;
 
     private int segmentMovementCount = 0;
     private int segmentDuration = 5000;
@@ -64,18 +67,26 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
         setContentView(R.layout.activity_sensor);
 
         lineData = new LineData(
-                DataProcessor.getInstance().getLabels(),
+                DataProcessor.getInstance().getLabelsAsArrayList(),
                 DataProcessor.getInstance().getDataSet()
         );
 
         lineChart = new LineChart(getApplicationContext());
         lineChart.setData(lineData);
-        lineChart.setOnClickListener(new View.OnClickListener() {
+        lineChart.setVisibleYRange(50, YAxis.AxisDependency.LEFT);
+        lineChart.setMaxVisibleValueCount(10);
+        lineChart.setFillFormatter(new FillFormatter() {
             @Override
-            public void onClick(View v) {
-                setContentView(R.layout.activity_sensor);
+            public float getFillLinePosition(LineDataSet lineDataSet, LineData lineData, float v, float v2) {
+                return 0;
             }
         });
+//        lineChart.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                setContentView(R.layout.activity_sensor);
+//            }
+//        });
 
         timer = new Timer();
         timerTask = new ChartTimer();
@@ -201,14 +212,23 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
 //            });
             DataProcessor.getInstance().addEntry(time, segmentMovementCount);
             System.out.println("Entry added: " + time + ", " + segmentMovementCount);
+            lineChart.setData(
+                    new LineData(
+                            DataProcessor.getInstance().getLabelsAsArrayList(),
+                            DataProcessor.getInstance().getDataSet()
+                    )
+            );
+            System.err.println(DataProcessor.getInstance().getDataSet().isDrawFilledEnabled());
+            lineChart.getLineData().getDataSetByIndex(0).setDrawFilled(true);
+            lineChart.getLineData().getDataSetByIndex(0).setFillAlpha(127);
+
+            segmentMovementCount = 0;
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     lineChart.invalidate();
-                    segmentMovementCount = 0;
                 }
             });
-
         }
     }
 
