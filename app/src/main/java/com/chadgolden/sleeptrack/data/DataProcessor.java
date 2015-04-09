@@ -29,7 +29,7 @@ public class DataProcessor {
     private String title;
 
     private int bufferIndex = 0;
-    private int bufferSize = 25;
+    private int bufferSize = 10;
     private int numberOfEntries = 0;
 
     private DataProcessor() {
@@ -67,7 +67,7 @@ public class DataProcessor {
         dataSet.setLineWidth(2.0f);
         dataSet.setColor(Color.BLACK);
         dataSet.setDrawFilled(true);
-        dataSet.setFillColor(Color.CYAN);
+        dataSet.setFillColor(Color.rgb(0,255,127));
         dataSet.setDrawCubic(true);
         dataSet.setFillAlpha(Color.alpha(127));
         return dataSet;

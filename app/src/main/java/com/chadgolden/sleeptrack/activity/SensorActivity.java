@@ -48,7 +48,7 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
     private float previousY;
     private float previousZ;
 
-    private static final int DELAY = 10; // In milliseconds.
+    private static final int DELAY = 5; // In milliseconds.
     private static final float ALLOWABLE_MOVEMENT = 0.04f;
 
     private int segmentMovementCount = 0;
@@ -75,12 +75,13 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
         lineChart.setData(lineData);
         lineChart.setVisibleYRange(50, YAxis.AxisDependency.LEFT);
         lineChart.setMaxVisibleValueCount(10);
-        lineChart.setFillFormatter(new FillFormatter() {
-            @Override
-            public float getFillLinePosition(LineDataSet lineDataSet, LineData lineData, float v, float v2) {
-                return 0;
-            }
-        });
+
+//        lineChart.setFillFormatter(new FillFormatter() {
+//            @Override
+//            public float getFillLinePosition(LineDataSet lineDataSet, LineData lineData, float v, float v2) {
+//                return 0;
+//            }
+//        });
 //        lineChart.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -221,7 +222,15 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
             System.err.println(DataProcessor.getInstance().getDataSet().isDrawFilledEnabled());
             lineChart.getLineData().getDataSetByIndex(0).setDrawFilled(true);
             lineChart.getLineData().getDataSetByIndex(0).setFillAlpha(127);
-
+            lineChart.getAxisLeft().setAxisMaxValue(INTERVAL/50);
+            lineChart.getAxisLeft().setAxisMinValue(0.0f);
+            lineChart.getAxisRight().setAxisMaxValue(INTERVAL/50);
+            lineChart.getAxisRight().setAxisMinValue(0.0f);
+            lineChart.getAxisLeft().setDrawGridLines(false);
+            lineChart.getAxisRight().setDrawGridLines(false);
+            lineChart.getXAxis().setDrawGridLines(false);
+            lineChart.getLineData().getDataSetByIndex(0).setDrawCircles(false);
+            lineChart.getLineData().setDrawValues(false);
             segmentMovementCount = 0;
             runOnUiThread(new Runnable() {
                 @Override

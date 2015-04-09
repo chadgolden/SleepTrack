@@ -1,53 +1,26 @@
 package com.chadgolden.sleeptrack.activity;
 
-import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 
 import com.chadgolden.sleeptrack.R;
 
-
-public class MainActivity extends ActionBarActivity {
-
-    private Button button;
-    private Button webButton;
+public class LoginActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        button = (Button) findViewById(R.id.buttonBegin);
-        webButton = (Button) findViewById(R.id.buttonWeb);
-
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, SensorActivity.class);
-                startActivity(intent);
-            }
-        });
-
-
-        webButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                System.out.println("Web Button Pressed");
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
-
-            }
-        });
-
+        setContentView(R.layout.activity_login);
+        System.out.println("Login activity started");
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_login, menu);
         return true;
     }
 
