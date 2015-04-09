@@ -12,7 +12,7 @@ import java.net.URLEncoder;
  */
 public class WebServerConnection {
 
-    private static final String link = "localhost/sleeptrack/login";
+    private static final String link = "localhost/sleeptrack/index.php/login";
 
     public void loginPost(String username, String password) {
         try {
