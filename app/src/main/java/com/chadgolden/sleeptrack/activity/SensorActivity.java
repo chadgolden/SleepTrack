@@ -1,7 +1,6 @@
 package com.chadgolden.sleeptrack.activity;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -9,20 +8,22 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.chadgolden.sleeptrack.R;
 import com.chadgolden.sleeptrack.data.DataProcessor;
+import com.chadgolden.sleeptrack.global.GlobalState;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.utils.FillFormatter;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -43,6 +44,7 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
     private ImageView moonImage;
 
     private Button buttonStats;
+    private Button buttonStart;
 
     private float previousX;
     private float previousY;
@@ -60,6 +62,8 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
 
     private LineChart lineChart;
     private LineData lineData;
+
+    private boolean timerRunning;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,15 +93,16 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
 //            }
 //        });
 
-        timer = new Timer();
+        timerRunning = false;
+
+        //timer = GlobalState.getInstance().getTimer();
         timerTask = new ChartTimer();
 
         // Set timer schedule to run timer task.
-        timer.schedule(timerTask, 0, INTERVAL);
+        //timer.schedule(timerTask, 0, INTERVAL);
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 
         lastUpdateTimeMillis = System.currentTimeMillis();
 
@@ -105,13 +110,41 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
         moonImage = (ImageView) findViewById(R.id.moonImage);
 
         buttonStats = (Button) findViewById(R.id.buttonStats);
+        buttonStart = (Button) findViewById(R.id.buttonStart);
 
-        buttonStats.setOnClickListener(new View.OnClickListener() {
+        buttonStart.setText((timerRunning) ? "Stop" : "Start");
+
+        buttonStats.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
 //                Intent chartIntent = new Intent(SensorActivity.this, ChartActivity.class);
 //                startActivity(chartIntent);
                 setContentView(lineChart);
+                System.out.println("Stats button clicked.");
             }
+        });
+
+        buttonStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!timerRunning) {
+                    buttonStart.setText("Stop");
+                    mSensorManager.registerListener(
+                            SensorActivity.this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL
+                    );
+                    timer = GlobalState.getInstance().newTimer();
+                    timer.schedule(timerTask, 0, INTERVAL);
+                } else if (timerRunning) {
+                    buttonStart.setText("Start");
+                    if (timerTask.cancel()) {
+                        System.out.println("Timer Task canceled.");
+                    }
+                    timer.cancel();
+                    mSensorManager.unregisterListener(SensorActivity.this, mAccelerometer);
+                }
+                System.out.println("Start/Stop button clicked.");
+
+            }
+
         });
 
 
@@ -239,6 +272,17 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
                 }
             });
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)  {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            setContentView(R.layout.activity_sensor);
+            System.out.println("Back button clicked.");
+            return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
     }
 
 }

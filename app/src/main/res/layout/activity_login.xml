@@ -61,5 +61,16 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:background="#555"
-        android:textColor="#fff"/>
+        android:textColor="#fff"
+        android:onClick="verifyLogin"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Large Text"
+        android:id="@+id/textViewLoginStatus"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible"/>
 </RelativeLayout>

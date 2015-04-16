@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.chadgolden.sleeptrack.R;
+import com.chadgolden.sleeptrack.global.GlobalState;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -26,11 +27,12 @@ public class MainActivity extends ActionBarActivity {
 
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, SensorActivity.class);
+                Intent intent = new Intent(
+                        MainActivity.this, GlobalState.getInstance().getSensorActivity().getClass()
+                );
                 startActivity(intent);
             }
         });
-
 
         webButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

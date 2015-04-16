@@ -32,8 +32,8 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Stop"
-        android:id="@+id/button"
+        android:text="Start"
+        android:id="@+id/buttonStart"
         android:layout_above="@+id/buttonStats"
         android:layout_centerHorizontal="true"
         android:textColor="#fff"/>
