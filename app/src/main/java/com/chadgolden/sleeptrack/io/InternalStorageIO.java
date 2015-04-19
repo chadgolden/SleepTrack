@@ -5,6 +5,7 @@ import android.content.Context;
 import com.chadgolden.sleeptrack.data.SleepSession;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +34,32 @@ public class InternalStorageIO {
         this.context = context;
     }
 
+    public InternalStorageIO(String fileName, FileInputStream fileInputStream) {
+        StringBuffer stringBuffer = new StringBuffer("");
+        try {
+            int c;
+            while ((c = fileInputStream.read()) != -1) {
+                stringBuffer.append((char)c);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String[] fileLines = new String(stringBuffer).split("\n");
+        ArrayList<String> times = new ArrayList<>();
+        ArrayList<Integer> numberOfMovements = new ArrayList<>();
+
+        for (int i = 0; i < fileLines.length; i++) {
+            String[] csv = fileLines[i].split(",");
+            times.add(csv[0]);
+            numberOfMovements.add(Integer.parseInt(csv[1]));
+        }
+
+        this.beginSleepTime =
+                new Date(Long.parseLong(fileName.substring(0, fileName.length() - 4)));
+        this.times = times;
+        this.numberOfMovements = numberOfMovements;
+    }
+
     public void write() {
         FileOutputStream fileOutputStream;
         try {
@@ -54,6 +81,10 @@ public class InternalStorageIO {
             retVal.append(times.get(i) + "," + numberOfMovements.get(i) + "\n");
         }
         return retVal.toString();
+    }
+
+    public SleepSession getSleepSession() {
+        return new SleepSession(beginSleepTime, times, numberOfMovements);
     }
 
     public void printContextFilesDirectory() {

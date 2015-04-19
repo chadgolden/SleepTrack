@@ -65,6 +65,10 @@
             android:name=".activity.HistoryActivity"
             android:label="@string/title_activity_history" >
         </activity>
+        <activity
+            android:name=".activity.SessionViewActivity"
+            android:label="@string/title_activity_session_view_activitiy" >
+        </activity>
     </application>
 
 </manifest>

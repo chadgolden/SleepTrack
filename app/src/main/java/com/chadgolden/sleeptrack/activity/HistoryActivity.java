@@ -1,5 +1,6 @@
 package com.chadgolden.sleeptrack.activity;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -18,13 +19,18 @@ import java.util.Date;
 
 public class HistoryActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 
+    private ArrayList<String> listOfSleepTrackFormatFiles;
+    private ArrayList<ContentItem> contentItems;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
         Utils.init(getResources());
 
-        ArrayList<ContentItem> contentItems = initContentItems();
+        listOfSleepTrackFormatFiles = initListOfSleepTrackFormatFiles();
+        contentItems = initContentItems();
+
         MyAdapter myAdapter = new MyAdapter(this, contentItems);
 
         ListView listView = (ListView)findViewById(R.id.listViewRecordFiles);
@@ -60,20 +66,29 @@ public class HistoryActivity extends ActionBarActivity implements AdapterView.On
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Intent intent = new Intent(this, SessionViewActivity.class);
+        intent.putExtra("FILE_NAME", listOfSleepTrackFormatFiles.get(position));
+        startActivity(intent);
+    }
 
+    private ArrayList<String> initListOfSleepTrackFormatFiles() {
+        ArrayList<String> listOfSleepTrackFormatFiles = new ArrayList<>();
+        for (String file : fileList()) {
+            if (file.contains(".stf")) {
+                listOfSleepTrackFormatFiles.add(file);
+            }
+        }
+        return listOfSleepTrackFormatFiles;
     }
 
     private ArrayList<ContentItem> initContentItems() {
         ArrayList<ContentItem> contentItems = new ArrayList<>();
-        ArrayList<String> files = new ArrayList<>();
-
-        for (String file : fileList()) {
-            if (file.contains(".stf")) {
-                String fileWithoutFormat = file.substring(0, file.length() - 4);
-                long fileTimeInMillis = Long.parseLong(fileWithoutFormat);
-                contentItems.add(new ContentItem(new Date(fileTimeInMillis).toString(), "<empty>"));
-            }
+        for (String file : listOfSleepTrackFormatFiles) {
+            String fileWithoutFormat = file.substring(0, file.length() - 4);
+            long fileTimeInMillis = Long.parseLong(fileWithoutFormat);
+            contentItems.add(new ContentItem(new Date(fileTimeInMillis).toString(), "<empty>"));
         }
         return contentItems;
     }
+
 }

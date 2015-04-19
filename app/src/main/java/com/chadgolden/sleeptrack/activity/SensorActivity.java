@@ -20,6 +20,7 @@ import android.view.View.OnKeyListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.chadgolden.sleeptrack.R;
 import com.chadgolden.sleeptrack.data.DataProcessor;
@@ -197,6 +198,9 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
 
                                     stream.flush();
                                     stream.close();
+
+                                    Toast.makeText(getBaseContext(),"Saved Successfully.",
+                                            Toast.LENGTH_SHORT).show();
 
                                 } catch (Exception e) {
 

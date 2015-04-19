@@ -9,5 +9,6 @@
     <string name="title_activity_login">LoginActivity</string>
     <string name="title_activity_new_main">NewMainActivity</string>
     <string name="title_activity_history">HistoryActivity</string>
+    <string name="title_activity_session_view_activitiy">SessionViewActivitiy</string>
 
 </resources>
