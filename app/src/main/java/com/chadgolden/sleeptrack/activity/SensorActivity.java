@@ -1,11 +1,14 @@
 package com.chadgolden.sleeptrack.activity;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -20,11 +23,14 @@ import android.widget.TextView;
 
 import com.chadgolden.sleeptrack.R;
 import com.chadgolden.sleeptrack.data.DataProcessor;
+import com.chadgolden.sleeptrack.data.SleepSession;
 import com.chadgolden.sleeptrack.global.GlobalState;
+import com.chadgolden.sleeptrack.io.InternalStorageIO;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.LineData;
 
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Timer;
@@ -33,7 +39,7 @@ import java.util.TimerTask;
 
 public class SensorActivity extends ActionBarActivity implements SensorEventListener {
 
-    public static int INTERVAL = 500;
+    public static int INTERVAL = 1000*10;
 
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
@@ -57,8 +63,10 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
     private int segmentDuration = 5000;
     private long lastEntry = System.currentTimeMillis();
 
+    private SleepSession sleepSession;
     private Timer timer;
     private ChartTimer timerTask;
+    private SleepRecorder sleepRecorder;
 
     private LineChart lineChart;
     private LineData lineData;
@@ -145,6 +153,71 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
 
             }
 
+        });
+
+        buttonStart.setOnClickListener( new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (buttonStart.getText().equals("Start")) {
+                    buttonStart.setText("Finish");
+                    sleepSession = new SleepSession();
+                    mSensorManager.registerListener(
+                            SensorActivity.this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL
+                    );
+                    timer = GlobalState.getInstance().newTimer();
+                    sleepRecorder = new SleepRecorder(sleepSession);
+                    timer.schedule(sleepRecorder, 0, INTERVAL);
+                } else if (buttonStart.getText().equals("Finish")) {
+                    sleepRecorder.cancel();
+                    timer.cancel();
+                    mSensorManager.unregisterListener(SensorActivity.this, mAccelerometer);
+                    System.out.println("Sleep tracking session completed.");
+                    AlertDialog.Builder builder = new AlertDialog.Builder(SensorActivity.this);
+                    builder
+                        .setTitle("Save Session")
+                        .setMessage("Would you like to save your session?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                FileOutputStream stream = null;
+                                try {
+                                    stream = getApplicationContext()
+                                            .openFileOutput(
+                                                    sleepSession.getBeginSleepSession().getTime() +
+                                                    ".stf", // SleepTrack format
+                                                    Context.MODE_PRIVATE);
+
+                                    InternalStorageIO io = new InternalStorageIO(
+                                            sleepSession,
+                                            getApplicationContext()
+                                    );
+                                    stream.write(io.encode().getBytes());
+                                    String[] list = fileList();
+
+                                    stream.flush();
+                                    stream.close();
+
+                                } catch (Exception e) {
+
+                                } finally {
+                                    if (stream != null) {
+                                        stream = null;
+                                    }
+                                }
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+
+                }
+            }
         });
 
 
@@ -271,6 +344,24 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
                     lineChart.invalidate();
                 }
             });
+        }
+    }
+
+    class SleepRecorder extends TimerTask {
+
+        SleepSession sleepSession;
+
+        public SleepRecorder(SleepSession sleepSession) {
+            this.sleepSession = sleepSession;
+        }
+
+        @Override
+        public void run() {
+            Calendar calendar = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+            final String time = sdf.format(calendar.getTime());
+            sleepSession.addEntry(time, segmentMovementCount);
+            segmentMovementCount = 0;
         }
     }
 

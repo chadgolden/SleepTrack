@@ -4,64 +4,64 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity"
-    android:background="#000">
+    android:background="#001">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="What would you like to do?"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="To begin, select an option below."
         android:id="@+id/textView"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="27dp"
-        android:textColor="#fff"
-        />
+        android:textColor="#fff"/>
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/listViewOptions"
+        android:layout_below="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="45dp" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="  Begin  "
+        android:text="New Button"
         android:id="@+id/buttonBegin"
+        android:layout_below="@+id/textView"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
         android:layout_marginTop="110dp"
-        android:minWidth="100dp"
-        android:textColor="#fff"
-    />
+        android:visibility="invisible" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="  History  "
+        android:text="New Button"
         android:id="@+id/buttonHistory"
-        android:layout_below="@+id/buttonBegin"
-        android:layout_marginTop="15dp"
+        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:minWidth="100dp"
-        android:textColor="#fff"
-        />
+        android:visibility="invisible"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="  Web  "
+        android:text="New Button"
         android:id="@+id/buttonWeb"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="34dp"
         android:layout_below="@+id/buttonHistory"
         android:layout_centerHorizontal="true"
-        android:minWidth="100dp"
-        android:textColor="#fff"
-        />
+        android:visibility="invisible" />
 
-    <TextClock
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textClock"
-        android:layout_alignParentBottom="true"
+        android:id="@+id/imageViewNightView"
+        android:layout_below="@id/listViewOptions"
         android:layout_centerHorizontal="true"
-        android:textColor="#0f0"
-        android:textSize="35sp"
-        android:fontFamily="monaco"
-        android:textStyle="bold"/>
+        android:src="@drawable/purple_moon_md"
+        android:layout_marginTop="20dp"/>
+
+
 </RelativeLayout>

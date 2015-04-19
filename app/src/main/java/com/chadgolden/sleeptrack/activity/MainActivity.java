@@ -1,18 +1,32 @@
 package com.chadgolden.sleeptrack.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.chadgolden.sleeptrack.R;
 import com.chadgolden.sleeptrack.global.GlobalState;
+import com.github.mikephil.charting.utils.Utils;
+import com.chadgolden.sleeptrack.ui.MyAdapter;
+import com.chadgolden.sleeptrack.ui.ContentItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 
     private Button button;
     private Button webButton;
@@ -20,7 +34,25 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
+
+        Utils.init(getResources());
+
+        ArrayList<ContentItem> contentItems = new ArrayList<>();
+        contentItems.add(new ContentItem("Record Your Sleep", "Click here and begin sleeping!"));
+        contentItems.add(new ContentItem("View Your Sleep Patterns",
+                "Click here to view your past nights."));
+        contentItems.add(new ContentItem("Options",
+                "Change settings or calibrate your movement sensor."));
+
+        MyAdapter adapter = new MyAdapter(this, contentItems);
+
+        ListView listView = (ListView)findViewById(R.id.listViewOptions);
+        listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(this);
 
         button = (Button) findViewById(R.id.buttonBegin);
         webButton = (Button) findViewById(R.id.buttonWeb);
@@ -67,4 +99,76 @@ public class MainActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Intent intent;
+        switch (position) {
+            case 0:
+                intent = new Intent(this, SensorActivity.class);
+                startActivity(intent);
+                break;
+            case 1:
+                intent = new Intent(this, HistoryActivity.class);
+                startActivity(intent);
+                break;
+            case 2:
+                intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                break;
+        }
+    }
+
+//    class ContentItem {
+//
+//        String itemName;
+//        String itemDescription;
+//
+//        public ContentItem(String name, String description) {
+//            this.itemName = name;
+//            this.itemDescription = description;
+//        }
+//
+//    }
+//
+//    class MyAdapter extends ArrayAdapter<ContentItem> {
+//
+//        public MyAdapter(Context context, List<ContentItem> items) {
+//            super(context, 0, items);
+//        }
+//
+//        @Override
+//        public View getView(int position, View convertView, ViewGroup parent) {
+//
+//            ContentItem contentItem = getItem(position);
+//
+//            ViewHolder holder = null;
+//
+//            if (convertView == null) {
+//
+//                holder = new ViewHolder();
+//
+//                convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item, null);
+//                holder.tvName = (TextView) convertView.findViewById(R.id.tvName);
+//                holder.tvDesc = (TextView) convertView.findViewById(R.id.tvDesc);
+//
+//                convertView.setTag(holder);
+//
+//            } else {
+//                holder = (ViewHolder) convertView.getTag();
+//            }
+//
+//            holder.tvName.setText(contentItem.itemName);
+//            holder.tvDesc.setText(contentItem.itemDescription);
+//
+//            return convertView;
+//        }
+//
+//        class ViewHolder {
+//
+//            TextView tvName, tvDesc;
+//        }
+//
+//    }
+
 }
