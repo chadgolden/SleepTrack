@@ -12,6 +12,6 @@
     <string name="title_activity_session_view_activitiy">SessionViewActivitiy</string>
     <string name="title_activity_settings">SettingsActivity</string>
     <string name="pref_device_sensitivity">Movement Sensor Sensitivity</string>
-    <string name="pref_device_sensitivity1">Movement Sensor Sensitivity</string>
+    <string name="pref_device_sensitivity1">Another Preference</string>
 
 </resources>

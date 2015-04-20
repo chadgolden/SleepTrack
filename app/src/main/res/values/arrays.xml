@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="deviceSensitivity">
+        <item name="veryLow">Very Low</item>
+        <item name="low">Low</item>
+        <item name="average">Average</item>
+        <item name="high">High</item>
+        <item name="veryHigh">Very High</item>
+    </string-array>
+
+    <string-array name="deviceSensitivityValues">
+        <item name="veryLow">1.0</item>
+        <item name="low">0.7</item>
+        <item name="average">0.5</item>
+        <item name="high">0.3</item>
+        <item name="veryHigh">0.1</item>
+    </string-array>
+
+</resources>

@@ -2,18 +2,27 @@ package com.chadgolden.sleeptrack.activity;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.preference.PreferenceActivity;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 
 import com.chadgolden.sleeptrack.R;
 import com.chadgolden.sleeptrack.data.DataProcessor;
 import com.chadgolden.sleeptrack.global.GlobalState;
+import com.chadgolden.sleeptrack.ui.MyAdapter;
 import com.chadgolden.sleeptrack.util.MySensorEventListener;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -21,6 +30,7 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.LineData;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -44,12 +54,18 @@ public class SettingsActivity extends PreferenceActivity
 
     public static int SETTINGS_INTERVAL = 500;
 
+    public float ALLOWED_MOVEMENT = 0.4f;
+//            PreferenceManager.getDefaultSharedPreferences(getBaseContext())
+//                    .getFloat("prefDeviceSensitivity", 0.5f);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         addPreferencesFromResource(R.xml.preferences);
         lastUpdateTimeMillis = System.currentTimeMillis();
+
+        setTheme(R.style.LightText);
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -60,7 +76,6 @@ public class SettingsActivity extends PreferenceActivity
         timerTask = new ChartTimer();
         timer = GlobalState.getInstance().newTimer();
         timer.schedule(timerTask, 0, SETTINGS_INTERVAL);
-
 
         mLineChart = (LineChart) findViewById(R.id.lineChartSettings);
     }
@@ -95,9 +110,9 @@ public class SettingsActivity extends PreferenceActivity
 
     @Override
     public boolean sensorExceedsAllowableMovement(float[] sensorValues) {
-        if (Math.abs(sensorValues[0] - previousX) > SensorActivity.ALLOWABLE_MOVEMENT ||
-                Math.abs(sensorValues[1] - previousY) > SensorActivity.ALLOWABLE_MOVEMENT ||
-                Math.abs(sensorValues[2] - previousZ) > SensorActivity.ALLOWABLE_MOVEMENT) {
+        if (Math.abs(sensorValues[0] - previousX) > ALLOWED_MOVEMENT ||
+                Math.abs(sensorValues[1] - previousY) > ALLOWED_MOVEMENT ||
+                Math.abs(sensorValues[2] - previousZ) > ALLOWED_MOVEMENT) {
             return true;
         }
         return false;
@@ -113,13 +128,7 @@ public class SettingsActivity extends PreferenceActivity
                 lastUpdateTimeMillis = currentTimeInMillis;
                 if (sensorExceedsAllowableMovement(event.values)) {
                     segmentMovementCount++;
-//                    if ((System.currentTimeMillis() - lastEntry) > segmentDuration) {
-//                        lastEntry = System.currentTimeMillis();
-//                        DataProcessor.getInstance().addEntry(segmentMovementCount);
-//                        segmentMovementCount = 0;
-//                    }
                 }
-
             }
         }
 

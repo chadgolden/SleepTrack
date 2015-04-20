@@ -3,11 +3,13 @@ package com.chadgolden.sleeptrack.activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -163,6 +165,9 @@ public class SensorActivity extends ActionBarActivity implements MySensorEventLi
             public void onClick(View v) {
                 if (buttonStart.getText().equals("Start")) {
                     buttonStart.setText("Finish");
+                    TextView runStatus = (TextView)findViewById(R.id.textViewRunStatus);
+                    runStatus.setTextColor(Color.GREEN);
+                    runStatus.setText("Status: Recording");
                     sleepSession = new SleepSession();
                     mSensorManager.registerListener(
                             SensorActivity.this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL
@@ -171,6 +176,9 @@ public class SensorActivity extends ActionBarActivity implements MySensorEventLi
                     sleepRecorder = new SleepRecorder(sleepSession);
                     timer.schedule(sleepRecorder, 0, INTERVAL);
                 } else if (buttonStart.getText().equals("Finish")) {
+                    TextView runStatus = (TextView)findViewById(R.id.textViewRunStatus);
+                    runStatus.setTextColor(Color.BLUE);
+                    runStatus.setText("Status: Finished");
                     sleepRecorder.cancel();
                     timer.cancel();
                     mSensorManager.unregisterListener(SensorActivity.this, mAccelerometer);
@@ -371,15 +379,15 @@ public class SensorActivity extends ActionBarActivity implements MySensorEventLi
         }
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)  {
-        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            setContentView(R.layout.activity_sensor);
-            System.out.println("Back button clicked.");
-            return true;
-        }
-
-        return super.onKeyDown(keyCode, event);
-    }
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event)  {
+//        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+//            setContentView(R.layout.activity_sensor);
+//            System.out.println("Back button clicked.");
+//            return true;
+//        }
+//
+//        return super.onKeyDown(keyCode, event);
+//    }
 
 }

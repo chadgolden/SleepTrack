@@ -3,12 +3,14 @@
     <PreferenceCategory
         android:title="@string/pref_device_sensitivity"
         android:textColor="#fff">
-        <EditTextPreference
+        <ListPreference
             android:title="@string/pref_device_sensitivity"
             android:summary="@string/pref_device_sensitivity"
+            android:textColor="#fff"
             android:key="prefDeviceSensitivity"
-            android:textColor="#fff">
-        </EditTextPreference>
+            android:entries="@array/deviceSensitivity"
+            android:entryValues="@array/deviceSensitivityValues" >
+        </ListPreference>
     </PreferenceCategory>
 
     <PreferenceCategory
