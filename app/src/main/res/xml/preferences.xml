@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/pref_device_sensitivity"
+        android:textColor="#fff">
+        <EditTextPreference
+            android:title="@string/pref_device_sensitivity"
+            android:summary="@string/pref_device_sensitivity"
+            android:key="prefDeviceSensitivity"
+            android:textColor="#fff">
+        </EditTextPreference>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_device_sensitivity1"
+        android:textColor="#fff">
+        <CheckBoxPreference
+            android:key="prefSomething1"
+            android:summary="@string/pref_device_sensitivity1"
+            android:title="@string/pref_device_sensitivity1"
+            android:textColor="#fff">
+        </CheckBoxPreference>
+    </PreferenceCategory>
+</PreferenceScreen>

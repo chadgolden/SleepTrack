@@ -27,6 +27,7 @@ import com.chadgolden.sleeptrack.data.DataProcessor;
 import com.chadgolden.sleeptrack.data.SleepSession;
 import com.chadgolden.sleeptrack.global.GlobalState;
 import com.chadgolden.sleeptrack.io.InternalStorageIO;
+import com.chadgolden.sleeptrack.util.MySensorEventListener;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.LineData;
@@ -38,9 +39,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
-public class SensorActivity extends ActionBarActivity implements SensorEventListener {
+public class SensorActivity extends ActionBarActivity implements MySensorEventListener {
 
     public static int INTERVAL = 1000*10;
+    public static int MAX_Y_VALUE = 100;
 
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
@@ -57,8 +59,8 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
     private float previousY;
     private float previousZ;
 
-    private static final int DELAY = 5; // In milliseconds.
-    private static final float ALLOWABLE_MOVEMENT = 0.04f;
+    public static final int DELAY = 5; // In milliseconds.
+    public static final float ALLOWABLE_MOVEMENT = 0.04f;
 
     private int segmentMovementCount = 0;
     private int segmentDuration = 5000;
@@ -298,7 +300,7 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
         // Not interested.
     }
 
-    private boolean sensorExceedsAllowableMovement(float[] values) {
+    public boolean sensorExceedsAllowableMovement(float[] values) {
         if (Math.abs(values[0] - previousX) > ALLOWABLE_MOVEMENT ||
             Math.abs(values[1] - previousY) > ALLOWABLE_MOVEMENT ||
             Math.abs(values[2] - previousZ) > ALLOWABLE_MOVEMENT) {
