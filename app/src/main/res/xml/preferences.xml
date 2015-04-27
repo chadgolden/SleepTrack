@@ -9,18 +9,22 @@
             android:textColor="#fff"
             android:key="prefDeviceSensitivity"
             android:entries="@array/deviceSensitivity"
-            android:entryValues="@array/deviceSensitivityValues" >
+            android:entryValues="@array/deviceSensitivityValues"
+            android:defaultValue="0.05">
         </ListPreference>
     </PreferenceCategory>
 
     <PreferenceCategory
         android:title="@string/pref_device_sensitivity1"
         android:textColor="#fff">
-        <CheckBoxPreference
-            android:key="prefSomething1"
+        <ListPreference
+            android:key="prefDeviceSensitivity1"
+            android:entries="@array/deviceReadingTimings"
+            android:entryValues="@array/deviceReadingTimingsValues"
             android:summary="@string/pref_device_sensitivity1"
             android:title="@string/pref_device_sensitivity1"
-            android:textColor="#fff">
-        </CheckBoxPreference>
+            android:textColor="#fff"
+            android:defaultValue="10">
+        </ListPreference>
     </PreferenceCategory>
 </PreferenceScreen>

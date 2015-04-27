@@ -2,6 +2,8 @@ package com.chadgolden.sleeptrack.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,6 +20,7 @@ import android.widget.TextView;
 
 import com.chadgolden.sleeptrack.R;
 import com.chadgolden.sleeptrack.global.GlobalState;
+import com.chadgolden.sleeptrack.global.GlobalValues;
 import com.github.mikephil.charting.utils.Utils;
 import com.chadgolden.sleeptrack.ui.MyAdapter;
 import com.chadgolden.sleeptrack.ui.ContentItem;
@@ -37,6 +40,17 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
+
+        // Get user application preferences so that we can easily make them accessible by
+        // other application modules.
+        SharedPreferences prefDeviceSensitivity = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // Set some settings variables for other applications to access.
+        GlobalValues values = GlobalValues.getInstance();
+        values.addKeyValuePair("prefDeviceSensitivity",
+                prefDeviceSensitivity.getString("prefDeviceSensitivity", "NULL"));
+        values.addKeyValuePair("prefDeviceSensitivity1",
+                prefDeviceSensitivity.getString("prefDeviceSensitivity1", "NULL"));
 
         Utils.init(getResources());
 
@@ -120,57 +134,5 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                 break;
         }
     }
-
-//    class ContentItem {
-//
-//        String itemName;
-//        String itemDescription;
-//
-//        public ContentItem(String name, String description) {
-//            this.itemName = name;
-//            this.itemDescription = description;
-//        }
-//
-//    }
-//
-//    class MyAdapter extends ArrayAdapter<ContentItem> {
-//
-//        public MyAdapter(Context context, List<ContentItem> items) {
-//            super(context, 0, items);
-//        }
-//
-//        @Override
-//        public View getView(int position, View convertView, ViewGroup parent) {
-//
-//            ContentItem contentItem = getItem(position);
-//
-//            ViewHolder holder = null;
-//
-//            if (convertView == null) {
-//
-//                holder = new ViewHolder();
-//
-//                convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item, null);
-//                holder.tvName = (TextView) convertView.findViewById(R.id.tvName);
-//                holder.tvDesc = (TextView) convertView.findViewById(R.id.tvDesc);
-//
-//                convertView.setTag(holder);
-//
-//            } else {
-//                holder = (ViewHolder) convertView.getTag();
-//            }
-//
-//            holder.tvName.setText(contentItem.itemName);
-//            holder.tvDesc.setText(contentItem.itemDescription);
-//
-//            return convertView;
-//        }
-//
-//        class ViewHolder {
-//
-//            TextView tvName, tvDesc;
-//        }
-//
-//    }
 
 }

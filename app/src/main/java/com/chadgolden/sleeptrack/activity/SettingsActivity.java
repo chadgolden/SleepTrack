@@ -22,6 +22,7 @@ import android.widget.ListView;
 import com.chadgolden.sleeptrack.R;
 import com.chadgolden.sleeptrack.data.DataProcessor;
 import com.chadgolden.sleeptrack.global.GlobalState;
+import com.chadgolden.sleeptrack.global.GlobalValues;
 import com.chadgolden.sleeptrack.ui.MyAdapter;
 import com.chadgolden.sleeptrack.util.MySensorEventListener;
 import com.github.mikephil.charting.charts.LineChart;
@@ -78,6 +79,9 @@ public class SettingsActivity extends PreferenceActivity
         timer.schedule(timerTask, 0, SETTINGS_INTERVAL);
 
         mLineChart = (LineChart) findViewById(R.id.lineChartSettings);
+
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .registerOnSharedPreferenceChangeListener(this);
     }
 
 
@@ -105,11 +109,28 @@ public class SettingsActivity extends PreferenceActivity
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        GlobalValues values = GlobalValues.getInstance();
+        switch (key) {
+            case "prefDeviceSensitivity":
+                values.addKeyValuePair(
+                        "prefDeviceSensitivity",
+                        sharedPreferences.getString("prefDeviceSensitivity", "NULL")
+                );
+                break;
+            case "prefDeviceSensitivity1":
+                values.addKeyValuePair(
+                        "prefDeviceSensitivity1",
+                        sharedPreferences.getString("prefDeviceSensitivity1", "NULL")
+                );
+                break;
+        }
 
     }
 
     @Override
     public boolean sensorExceedsAllowableMovement(float[] sensorValues) {
+        final String prefString = GlobalValues.getInstance().getValue("prefDeviceSensitivity");
+        final float ALLOWED_MOVEMENT = Float.parseFloat(prefString);
         if (Math.abs(sensorValues[0] - previousX) > ALLOWED_MOVEMENT ||
                 Math.abs(sensorValues[1] - previousY) > ALLOWED_MOVEMENT ||
                 Math.abs(sensorValues[2] - previousZ) > ALLOWED_MOVEMENT) {
@@ -124,14 +145,16 @@ public class SettingsActivity extends PreferenceActivity
         long currentTimeInMillis = System.currentTimeMillis();
 
         if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            if ((currentTimeInMillis - lastUpdateTimeMillis) >= SensorActivity.DELAY) {
+            final String prefTimingString =
+                    GlobalValues.getInstance().getValue("prefDeviceSensitivity1");
+            final float TIMING_DELAY = Float.parseFloat(prefTimingString);
+            if ((currentTimeInMillis - lastUpdateTimeMillis) >= TIMING_DELAY) {
                 lastUpdateTimeMillis = currentTimeInMillis;
                 if (sensorExceedsAllowableMovement(event.values)) {
                     segmentMovementCount++;
                 }
             }
         }
-
         previousX = event.values[0];
         previousY = event.values[1];
         previousZ = event.values[2];
